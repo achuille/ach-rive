@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>~*~*~ AcH RiVe ~*~*~</title>
+    <!-- Import de la police pixel ! -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        /* CSS 100% "bon" goût début 2000 - VERSION 10.0 (THE GOLDEN AGE - STABLE) */
+        
+        @keyframes bounce-animation { 40% {transform: translateY(-20px);} 60% {transform: translateY(-10px);} }
+        @keyframes running-guy-wait-flip {
+            0%, 49.9% { transform: scaleX(1); }
+            50%, 100% { transform: scaleX(-1); }
+        }
+        @keyframes cover-pulse-animation { 50% { transform: scale(1.05); box-shadow: 0 0 30px 10px #00ffff, 0 0 10px 4px #00ffff inset;} }
+        @keyframes sparkle-fade { to { transform: scale(0); opacity: 0; } }
+        @keyframes visualize-animation { 0%,100% { height: 5%; } 20% { height: 100%; } 40% { height: 30%; } 60% { height: 80%; } 80% { height: 45%; } }
+        @keyframes button-shake-animation { 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg); } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); } }
+        
+        @keyframes ripple-effect {
+            100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+        }
+
+        body { font-family: 'Comic Sans MS', 'Chalkduster', 'Marker Felt', sans-serif; text-align: center; overflow-x: hidden; cursor: url('https://files.catbox.moe/xf5rbi.GIF'), auto; transition: filter 0.5s ease-in-out; }
+        body.konami-activated { filter: invert(1) hue-rotate(180deg); }
+
+        #background-video { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; z-index: -3; object-fit: cover; }
+        #tsparticles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: rgba(0, 0, 0, 0.6); }
+        
+        .main-container { width: 90%; max-width: 800px; margin: 20px auto; border: 10px ridge #00FFFF; background-color: rgba(20, 0, 30, 0.75); padding: 15px; box-shadow: 0 0 30px #FF00FF, 0 0 50px #FF00FF inset; z-index: 10; }
+        .header h1 { font-family: 'Press Start 2P', cursive; font-size: 3.5rem; animation: bounce-animation 2s infinite ease-in-out; letter-spacing: 2px; }
+        
+        #search-bar { width: 80%; padding: 10px; margin: 15px auto; border: 3px dashed #ffff00; background-color: #333; color: #00ff00; font-family: 'Press Start 2P', cursive; font-size: 0.8rem; text-align: center; }
+        #search-bar::placeholder { color: #009900; }
+        #search-bar:focus { outline: 3px solid #ff00ff; }
+
+        .header marquee { font-size: 20px; color: #FFFFFF; font-weight: bold; background-color: #FF00FF; padding: 5px; border: 2px dashed #FFFF00; }
+        .running-gif {
+            width: 80px; height: 80px;
+            animation: running-guy-wait-flip 6s infinite steps(1, end);
+            margin: 0 20px;
+        }
+        
+        .track-container { position: relative; padding: 15px; margin-bottom: 20px; border: 4px dashed #00FF00; background: repeating-linear-gradient(-45deg, rgba(0,0,0,0.2), rgba(0,0,0,0.2) 15px, rgba(255, 0, 255, 0.3) 15px, rgba(255, 0, 255, 0.3) 30px); transition: transform 0.2s, border-color 0.2s; }
+        .track-container:hover { transform: rotate(-1deg) scale(1.01); border-color: #ffff00; }
+
+
+        .track-content { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        @media (min-width: 600px) { .track-content { flex-direction: row; } }
+
+        .cover-art { width: 150px; height: 150px; border: 5px double #FF00FF; object-fit: cover; flex-shrink: 0; transition: transform 0.5s, box-shadow 0.5s; }
+        .cover-art.playing { animation: cover-pulse-animation 1.2s infinite ease-in-out; }
+
+        .track-info { flex-grow: 1; text-align: left; }
+        .track-info h2 { font-size: 2.5rem; margin: 10px 0; color: #FFFFFF; text-shadow: 3px 3px #000, 4px 4px #FF00FF; }
+        .track-info p { margin: 5px 0; font-size: 1.2rem; color: #FFFF00; }
+        .track-info p strong { color: #00FF00; }
+        
+        .download-button { position: absolute; top: 5px; right: 5px; z-index: 5; display: inline-block; background: none; border: none; padding: 0; cursor: url('https://files.catbox.moe/xf5rbi.GIF'), auto; }
+        .download-button:hover { background: none; animation: button-shake-animation 0.5s infinite; }
+        .download-button::after { content: ''; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; border-radius: 50%; background-color: rgba(0, 255, 255, 0.7); transform: translate(-50%, -50%) scale(0); z-index: -1; animation: ripple-effect 1.2s ease-out 2s infinite; }
+
+        .sparkle { position: absolute; width: 10px; height: 10px; background: #fff; z-index: 9999; pointer-events: none; border-radius: 50%; box-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #FF00FF; animation: sparkle-fade 0.5s forwards; }
+        
+        .player-container { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 15px; width:100%; }
+        .custom-player { display: flex; flex-direction: column; align-items: center; gap: 5px; width: 100%; background: #222; border: 2px solid #ff00ff; padding: 5px; }
+        .player-controls { display: flex; align-items: center; gap: 10px; }
+        .play-pause-btn { background: #00ff00; color: #000; border: 2px outset #fff; font-family: 'Press Start 2P'; font-size: 0.8rem; padding: 5px 10px; cursor: pointer; }
+        .play-pause-btn.playing { background: #ffff00; }
+        .time-container { font-family: 'Press Start 2P'; color: #00ff00; font-size: 0.8rem; }
+        .progress-bar-container { width: 100%; height: 15px; background: #111; border: 2px inset #fff; cursor: pointer; }
+        .progress-bar { width: 0%; height: 100%; background: linear-gradient(to right, #ff00ff, #00ffff); }
+        
+        .visualizer { display: flex; gap: 3px; height: 40px; align-items: flex-end; }
+        .visualizer-bar { width: 5px; background: linear-gradient(hsl(var(--hue, 120), 100%, 50%), hsl(calc(var(--hue, 120) + 60), 100%, 50%)); height: 5%; transition: height 0.1s; }
+        .visualizer.playing .visualizer-bar { animation-name: visualize-animation; animation-iteration-count: infinite; }
+        .player-gif { width: 40px; height: 40px; object-fit: contain; flex-shrink: 0; cursor: pointer; }
+
+    </style>
+</head>
+<body>
+    <video autoplay muted loop id="background-video">
+        <source src="https://mvod.itunes.apple.com/itunes-assets/HLSVideo221/v4/b4/a0/fb/b4a0fb68-cfcf-d377-7855-fc5ae1150f39/P882726823_Anull_video_gr698_sdr_2160x2160-.mp4" type="video/mp4">
+    </video>
+    <div id="tsparticles"></div>
+    <audio id="gif-click-sound" src="https://files.catbox.moe/5liz72.mp3"></audio>
+
+    <div class="main-container">
+        <header class="header">
+            <h1 id="main-title">Ach Rive</h1>
+            <input type="text" id="search-bar" placeholder="Rechercher un son...">
+            <div style="display: flex; align-items: center; justify-content: center;">
+                <img src="https://files.catbox.moe/7qgctb.GIF" alt="Running Man" class="running-gif">
+                <marquee behavior="scroll" direction="left">>> >> >> les sons unreleadsed que j'aime bien ^^ << << <<</marquee>
+                <img src="https://files.catbox.moe/7qgctb.GIF" alt="Running Man" class="running-gif" style="animation-direction: reverse;">
+            </div>
+        </header>
+
+        <div id="tracklist"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@3.1.0/tsparticles.bundle.min.js"></script>
+
+    <script>
+        // ===================================================================
+        // === AJOUTE TES MUSIQUES ICI ! ===
+        // ===================================================================
+        const tracks = [
+            { title: "4X", artist: "miki & Kimi Duplizzle", album: "4X", year: "2023", coverUrl: "https://files.catbox.moe/8cwu7j.jpg", mp3Url: "https://files.catbox.moe/z7vn1e.mp3" },
+            { title: "Rêves Encore", artist: "miki & Kimi Duplizzle", album: "4X", year: "2023", coverUrl: "https://files.catbox.moe/8cwu7j.jpg", mp3Url: "https://files.catbox.moe/1slwaw.mp3" },
+            { title: "Rêves, rêves, rêves, rêves...", artist: "miki & Kimi Duplizzle", album: "4X", year: "2023", coverUrl: "https://files.catbox.moe/8cwu7j.jpg", mp3Url: "https://files.catbox.moe/bkqgl0.mp3" },
+            { title: "Ahead (live)", artist: "Ela Minus", album: "Grow", year: "2016", coverUrl: "https://files.catbox.moe/yn5fn2.png", mp3Url: "https://files.catbox.moe/0uyg13.m4a" },
+            { title: "Volcán", artist: "Ela Minus", album: "Grow", year: "2016", coverUrl: "https://files.catbox.moe/yn5fn2.png", mp3Url: "https://files.catbox.moe/7xrxah.mp3" },
+            { title: "kiddo", artist: "Ela Minus", album: "First Words", year: "2015", coverUrl: "https://files.catbox.moe/27znr8.png", mp3Url: "https://files.catbox.moe/lb8i47.m4a" },
+            { title: "WTF (Beta Instrumental)", artist: "Etienne de Crécy", album: "Super Discount 3", year: "2015", coverUrl: "https://files.catbox.moe/e89a76.png", mp3Url: "https://files.catbox.moe/czuexy.mp3" },
+            { title: "Sunset (Beta Instrumental)", artist: "Etienne de Crécy", album: "Super Discount 3", year: "2015", coverUrl: "https://files.catbox.moe/e89a76.png", mp3Url: "https://files.catbox.moe/2o1a6o.mp3" },
+        ];
+
+        // ===================================================================
+        // === MAGIE NOIRE EN DESSOUS (NE PAS TOUCHER) ===
+        // ===================================================================
+        
+        window.addEventListener('load', main);
+
+        function main() {
+            const tracklistContainer = document.getElementById('tracklist');
+            initRainbowTitle();
+            initKonamiCode();
+            shuffleArray(tracks);
+
+            tracks.forEach(track => {
+                const trackElement = document.createElement('div');
+                trackElement.className = 'track-container';
+                trackElement.dataset.search = `${track.title} ${track.artist} ${track.album}`.toLowerCase();
+                
+                trackElement.innerHTML = `
+                <a href="${track.mp3Url}" class="download-button" target="_blank" rel="noopener noreferrer"><img src="https://files.catbox.moe/bcbspy.GIF" alt="Télécharger" style="height: 40px;"></a>
+                <div class="track-content">
+                    <img src="${track.coverUrl}" alt="Cover" class="cover-art" onerror="this.src='https://placehold.co/150x150/000/fff?text=IMAGE+HS';">
+                    <div class="track-info">
+                        <h2 class="scramble-on-hover">${track.title}</h2>
+                        <p><strong>Artiste :</strong> ${track.artist}</p>
+                        <p><strong>Album :</strong> ${track.album}</p>
+                        <p><strong>Année :</strong> ${track.year}</p>
+                    </div>
+                </div>
+                <audio class="audio-player-hidden" src="${track.mp3Url}"></audio>
+                <div class="player-container">
+                    <div class="custom-player">
+                        <div class="player-controls">
+                            <button class="play-pause-btn">PLAY</button>
+                            <div class="time-container">
+                                <span class="current-time">00:00</span> / <span class="total-duration">00:00</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar"></div>
+                        </div>
+                    </div>
+                    <div class="visualizer">
+                        ${Array.from({length: 5}, () => `<div class="visualizer-bar" style="animation-duration: ${Math.random() * 0.5 + 0.3}s; animation-delay: ${Math.random() * 0.5}s;"></div>`).join('')}
+                    </div>
+                    <img src="https://files.catbox.moe/5bhu0u.GIF" alt="Audio Gif" class="player-gif">
+                </div>
+                `;
+                
+                tracklistContainer.appendChild(trackElement);
+                initCustomPlayer(trackElement);
+                initTextScramble(trackElement.querySelector('h2'));
+            });
+
+            initSearchBar();
+            
+             tsParticles.load({ id: "tsparticles", options: { fpsLimit: 60, interactivity: { events: { onClick: { enable: true, mode: "push" } }, modes: { push: { quantity: 4 } } }, particles: { color: { value: ["#ff00ff", "#00ffff", "#ffff00", "#00ff00"] }, links: { enable: false }, move: { direction: "top", enable: true, outModes: "out", random: true, speed: { min: 2, max: 5 }, straight: false, trail: { enable: true, fill: { color: "#000000" }, length: 20 } }, number: { density: { enable: true }, value: 100 }, opacity: { value: { min: 0.3, max: 1 } }, shape: { type: ["circle", "square", "star", "polygon"] }, size: { value: { min: 2, max: 5 } } }, detectRetina: true } });
+            document.addEventListener("mousemove",function(e){let t=document.createElement("div");t.className="sparkle",document.body.appendChild(t),t.style.left=e.clientX+window.scrollX+"px",t.style.top=e.clientY+window.scrollY+"px",t.style.left+=20*(Math.random()-.5)+"px",t.style.top+=20*(Math.random()-.5)+"px",setTimeout(()=>{t.remove()},500)});
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+        
+        function formatTime(seconds) {
+            if (isNaN(seconds) || seconds < 0) return "00:00";
+            const minutes = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        function initCustomPlayer(trackElement) {
+            const audioPlayer = trackElement.querySelector('.audio-player-hidden');
+            const playPauseBtn = trackElement.querySelector('.play-pause-btn');
+            const progressBar = trackElement.querySelector('.progress-bar');
+            const progressBarContainer = trackElement.querySelector('.progress-bar-container');
+            const currentTimeEl = trackElement.querySelector('.current-time');
+            const totalDurationEl = trackElement.querySelector('.total-duration');
+            const coverArt = trackElement.querySelector('.cover-art');
+            const visualizer = trackElement.querySelector('.visualizer');
+            const playerGif = trackElement.querySelector('.player-gif');
+            const gifClickSound = document.getElementById('gif-click-sound');
+
+            playerGif.onclick = () => { gifClickSound.currentTime = 0; gifClickSound.play(); };
+
+            playPauseBtn.addEventListener('click', () => {
+                const isPlaying = playPauseBtn.classList.contains('playing');
+                if (isPlaying) {
+                    audioPlayer.pause();
+                } else {
+                    document.querySelectorAll('.audio-player-hidden').forEach(player => player.pause());
+                    audioPlayer.play();
+                }
+            });
+
+            audioPlayer.addEventListener('play', () => {
+                playPauseBtn.classList.add('playing');
+                playPauseBtn.textContent = 'PAUSE';
+                coverArt.classList.add('playing');
+                visualizer.classList.add('playing');
+                
+                document.querySelectorAll('.play-pause-btn').forEach(btn => {
+                    if (btn !== playPauseBtn) {
+                        btn.classList.remove('playing');
+                        btn.textContent = 'PLAY';
+                        btn.closest('.track-container').querySelector('.cover-art').classList.remove('playing');
+                        btn.closest('.track-container').querySelector('.visualizer').classList.remove('playing');
+                    }
+                });
+            });
+
+            audioPlayer.addEventListener('pause', () => {
+                playPauseBtn.classList.remove('playing');
+                playPauseBtn.textContent = 'PLAY';
+                coverArt.classList.remove('playing');
+                visualizer.classList.remove('playing');
+            });
+
+            audioPlayer.addEventListener('loadedmetadata', () => {
+                totalDurationEl.textContent = formatTime(audioPlayer.duration);
+            });
+
+            audioPlayer.addEventListener('timeupdate', () => {
+                if(isNaN(audioPlayer.duration)) return;
+                const progressPercent = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+                progressBar.style.width = `${progressPercent}%`;
+                currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
+            });
+
+            progressBarContainer.addEventListener('click', (e) => {
+                if(isNaN(audioPlayer.duration)) return;
+                const width = progressBarContainer.clientWidth;
+                const clickX = e.offsetX;
+                audioPlayer.currentTime = (clickX / width) * audioPlayer.duration;
+            });
+
+            const randomHue = Math.floor(Math.random() * 360);
+            visualizer.style.setProperty('--hue', randomHue);
+        }
+
+        function initSearchBar() {
+            const searchBar = document.getElementById('search-bar');
+            const trackElements = document.querySelectorAll('.track-container');
+            searchBar.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                trackElements.forEach(track => {
+                    if (track.dataset.search.includes(query)) {
+                        track.style.display = '';
+                    } else {
+                        track.style.display = 'none';
+                    }
+                });
+            });
+        }
+        function initTextScramble(element) { const chars = '!<>-_\\/[]{}—=+*^?#________'; let originalText = element.innerText; let intervalId; element.addEventListener('mouseover', () => { let iteration = 0; clearInterval(intervalId); intervalId = setInterval(() => { element.innerText = originalText.split('').map((letter, index) => { if (index < iteration) return originalText[index]; return chars[Math.floor(Math.random() * chars.length)]; }).join(''); if(iteration >= originalText.length) clearInterval(intervalId); iteration += 1 / 3; }, 30); }); element.addEventListener('mouseout', () => { clearInterval(intervalId); element.innerText = originalText; }); }
+        function initDraggableWindow() { 
+             // Cette fonction est vide car la librairie interact.js a été retirée pour la stabilité
+        }
+        function initKonamiCode() { const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a']; let konamiIndex = 0; document.addEventListener('keydown', (e) => { if (e.key === konamiCode[konamiIndex]) { konamiIndex++; if (konamiIndex === konamiCode.length) { document.body.classList.toggle('konami-activated'); konamiIndex = 0; } } else { konamiIndex = 0; } }); }
+        function initRainbowTitle() { const title = document.getElementById('main-title'); if(!title) return; const text = title.innerText; title.innerHTML = ''; for (let i = 0; i < text.length; i++) { const charSpan = document.createElement('span'); charSpan.innerText = text[i]; title.appendChild(charSpan); } let hue = 0; setInterval(() => { hue++; for (let i = 0; i < title.children.length; i++) { const letter = title.children[i]; if(letter.innerText.trim() !== ''){ const letterHue = (hue + i * 10) % 360; letter.style.color = `hsl(${letterHue}, 100%, 50%)`; letter.style.textShadow = `3px 3px hsl(${(letterHue + 180) % 360}, 100%, 50%)`; } } }, 25); }
+        
+    </script>
+</body>
+</html>
+
